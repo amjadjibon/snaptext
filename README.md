@@ -131,9 +131,28 @@ snaptext 0.3.0 (663d663)      # built at the tag
 snaptext 0.3.0+2 (a1b2c3d)    # two commits past it
 ```
 
-So a release is just `git tag -a v0.4.0 -m "snaptext 0.4.0"`. Builds made outside a
+Builds made outside a
 git checkout (a source tarball) fall back to `fallbackVersion` in
 `Plugins/VersionStamp/VersionStamp.swift` and print no commit.
+
+### Releasing
+
+```bash
+just publish 0.4.0 --dry-run   # build and package only; nothing leaves your machine
+just publish 0.4.0             # tag, build, publish (asks before it pushes)
+```
+
+`scripts/release.sh` checks the tree is clean and the tag is free, runs the tests,
+tags, builds an arm64 and an x86_64 binary, merges them with `lipo`, and publishes
+`snaptext-darwin-{arm64,x86_64,universal}.tar.gz` plus `SHA256SUMS` to GitHub
+Releases, with notes gathered from the conventional commits since the last tag. If
+anything fails before publishing, the local tag is removed again.
+
+Slices are built one triple at a time rather than with `swift build --arch`: that
+flag routes through XCBuild, which cannot resolve the VersionStamp plugin.
+
+Released binaries are not notarized, so they carry a quarantine flag on download —
+the install instructions in the generated notes say how to clear it.
 
 ## License
 

@@ -16,3 +16,6 @@ clean:
 install:
     swift build -c release
     cp .build/release/snaptext /usr/local/bin/snaptext
+
+publish version *flags:
+    ./scripts/release.sh {{version}} {{flags}}
