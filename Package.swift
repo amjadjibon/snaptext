@@ -19,7 +19,12 @@ let package = Package(
             dependencies: ["SnapTextKit"]
         ),
         .target(
-            name: "SnapTextKit"
+            name: "SnapTextKit",
+            plugins: ["VersionStamp"]
+        ),
+        .plugin(
+            name: "VersionStamp",
+            capability: .buildTool()
         ),
         .testTarget(
             name: "SnapTextKitTests",

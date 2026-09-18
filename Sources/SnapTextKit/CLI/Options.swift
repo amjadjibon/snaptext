@@ -32,7 +32,7 @@ public enum Invocation: Equatable, Sendable {
 
 public enum CommandLineParser {
     public static let usage = """
-        snaptext \(SnapTextCLI.version) — local OCR for macOS, powered by Apple's Vision framework.
+        snaptext \(SnapTextCLI.versionDescription) — local OCR for macOS, powered by Apple's Vision framework.
 
         USAGE:
           snaptext <image>            OCR an image file

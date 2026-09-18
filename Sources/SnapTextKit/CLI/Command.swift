@@ -3,7 +3,15 @@ import Foundation
 
 /// The command-line front end: parse, fetch an image, recognize, emit.
 public enum SnapTextCLI {
-    public static let version = "0.3.0"
+    /// Stamped from the git tag and commit at build time by the VersionStamp plugin.
+    public static let version = BuildInfo.version
+    public static let commit = BuildInfo.commit
+
+    /// What `--version` prints, e.g. `0.3.0 (663d663)` or `0.3.0+2 (a1b2c3d)`.
+    /// The commit is omitted when the binary was built outside a git checkout.
+    public static var versionDescription: String {
+        commit.isEmpty ? version : "\(version) (\(commit))"
+    }
 
     /// Runs the CLI and returns the process exit code. Never throws.
     public static func run(arguments: [String]) -> Int32 {
@@ -13,7 +21,7 @@ public enum SnapTextCLI {
             case .help:
                 print(CommandLineParser.usage)
             case .version:
-                print("snaptext \(version)")
+                print("snaptext \(versionDescription)")
             case .run(let options):
                 verbose = options.verbose
                 try execute(options)

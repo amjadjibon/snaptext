@@ -113,10 +113,27 @@ Layout:
 ```text
 Sources/SnapText/        thin executable entry point
 Sources/SnapTextKit/     CLI, OCR, Image, Capture, Clipboard, Output
+Plugins/VersionStamp/    stamps the version from git at build time
 Tests/SnapTextKitTests/  parser, formatter, loader, and OCR tests
 ```
 
 The OCR tests render their own images, so there are no binary fixtures to maintain.
+
+### Versioning
+
+There is no version constant to bump — the git tag is the source of truth. A build
+plugin stamps `--version` from the nearest tag, the number of commits since it, and
+the short commit hash:
+
+```bash
+$ snaptext --version
+snaptext 0.3.0 (663d663)      # built at the tag
+snaptext 0.3.0+2 (a1b2c3d)    # two commits past it
+```
+
+So a release is just `git tag -a v0.4.0 -m "snaptext 0.4.0"`. Builds made outside a
+git checkout (a source tarball) fall back to `fallbackVersion` in
+`Plugins/VersionStamp/VersionStamp.swift` and print no commit.
 
 ## License
 
