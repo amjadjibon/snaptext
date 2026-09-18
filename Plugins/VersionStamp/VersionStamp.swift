@@ -1,23 +1,25 @@
 import Foundation
 import PackagePlugin
 
-/// Generates `BuildInfo` before every build so `--version` reports the git tag
-/// and commit the binary was built from, instead of a constant that drifts.
+/// Generates `BuildInfo` from git so `--version` reports the tag and commit the
+/// binary was built from, instead of a constant that drifts.
 ///
-/// Outside a git checkout (a source tarball, for instance) it falls back to
-/// `fallbackVersion` below.
+/// The git refs are declared as build inputs: without them the build system
+/// caches the generated file and keeps reporting the commit it first saw.
+/// Outside a git checkout (a source tarball, for instance) the stamp falls back
+/// to `fallbackVersion` and reports no commit.
 @main
 struct VersionStamp: BuildToolPlugin {
     /// Used when git is unavailable; keep in step with the latest tag.
     static let fallbackVersion = "0.3.0"
 
     func createBuildCommands(context: PluginContext, target: Target) throws -> [Command] {
-        let outputDirectory = context.pluginWorkDirectoryURL
-        let outputFile = outputDirectory.appending(path: "BuildInfo.swift")
+        let packageDirectory = context.package.directoryURL
+        let outputFile = context.pluginWorkDirectoryURL.appending(path: "BuildInfo.swift")
 
         let script = """
             set -e
-            cd "\(context.package.directoryURL.path())"
+            cd "\(packageDirectory.path())"
 
             tag=$(git describe --tags --abbrev=0 2>/dev/null || true)
             commit=$(git rev-parse --short HEAD 2>/dev/null || true)
@@ -42,12 +44,38 @@ struct VersionStamp: BuildToolPlugin {
             """
 
         return [
-            .prebuildCommand(
+            .buildCommand(
                 displayName: "Stamping version from git",
                 executable: URL(fileURLWithPath: "/bin/sh"),
                 arguments: ["-c", script],
-                outputFilesDirectory: outputDirectory
+                inputFiles: gitInputs(in: packageDirectory),
+                outputFiles: [outputFile]
             )
         ]
+    }
+
+    /// The git files whose contents decide the stamp: the checked-out branch, the
+    /// commit it points at, and the tags. Missing entries are simply not declared.
+    private func gitInputs(in packageDirectory: URL) -> [URL] {
+        let gitDirectory = packageDirectory.appending(path: ".git")
+        let head = gitDirectory.appending(path: "HEAD")
+
+        var candidates = [
+            head,
+            gitDirectory.appending(path: "packed-refs"),
+            gitDirectory.appending(path: "refs/tags")
+        ]
+
+        // `.git/HEAD` only changes when the branch does; the branch ref changes on
+        // every commit, so follow it.
+        if let contents = try? String(contentsOf: head, encoding: .utf8),
+            contents.hasPrefix("ref: ") {
+            let reference = contents
+                .dropFirst("ref: ".count)
+                .trimmingCharacters(in: .whitespacesAndNewlines)
+            candidates.append(gitDirectory.appending(path: reference))
+        }
+
+        return candidates.filter { FileManager.default.fileExists(atPath: $0.path) }
     }
 }
