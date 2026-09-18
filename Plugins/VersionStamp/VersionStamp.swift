@@ -11,7 +11,7 @@ import PackagePlugin
 @main
 struct VersionStamp: BuildToolPlugin {
     /// Used when git is unavailable; keep in step with the latest tag.
-    static let fallbackVersion = "0.3.0"
+    static let fallbackVersion = "0.0.0"
 
     func createBuildCommands(context: PluginContext, target: Target) throws -> [Command] {
         let packageDirectory = context.package.directoryURL
