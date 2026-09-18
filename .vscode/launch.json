@@ -1,0 +1,24 @@
+{
+    "configurations": [
+        {
+            "type": "swift",
+            "request": "launch",
+            "args": [],
+            "cwd": "${workspaceFolder:snaptext}",
+            "name": "Debug snaptext",
+            "target": "snaptext",
+            "configuration": "debug",
+            "preLaunchTask": "swift: Build Debug snaptext"
+        },
+        {
+            "type": "swift",
+            "request": "launch",
+            "args": [],
+            "cwd": "${workspaceFolder:snaptext}",
+            "name": "Release snaptext",
+            "target": "snaptext",
+            "configuration": "release",
+            "preLaunchTask": "swift: Build Release snaptext"
+        }
+    ]
+}
