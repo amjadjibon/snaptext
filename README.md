@@ -152,7 +152,44 @@ Slices are built one triple at a time rather than with `swift build --arch`: tha
 flag routes through XCBuild, which cannot resolve the VersionStamp plugin.
 
 Released binaries are not notarized, so they carry a quarantine flag on download —
-the install instructions in the generated notes say how to clear it.
+the install instructions in the generated notes say how to clear it. Homebrew
+formulae download with `curl`, which does not set that flag, so a tapped install
+needs no `xattr` — that is the reason for a formula here rather than a cask, since
+casks do quarantine what they download.
+
+### Homebrew tap
+
+A tap is just a GitHub repository named `homebrew-<something>` with formulae in
+`Formula/`. Create it once — a shared tap for several tools, or one per project:
+
+```bash
+gh repo create amjadjibon/homebrew-tap --public \
+    --description "Homebrew formulae for amjadjibon's tools"
+```
+
+Then pass it to every release:
+
+```bash
+just publish 0.4.0 --tap amjadjibon/homebrew-tap
+```
+
+The script writes `dist/snaptext.rb` from the checksums it just computed and, after
+the GitHub release exists, commits it to the tap as `Formula/snaptext.rb`. Users
+install with:
+
+```bash
+brew install amjadjibon/tap/snaptext     # brew expands this to the homebrew-tap repo
+```
+
+Both repositories have to be public: Homebrew downloads release assets
+unauthenticated, so a private release 404s no matter who runs `brew install`.
+
+The formula points at the universal tarball rather than building from source:
+`--version` is stamped from the git checkout, which a Homebrew source build does not
+have, so a source formula would report `0.0.0`. One universal binary also means no
+`on_arm`/`on_intel` branches to keep in sync.
+
+Without `--tap` the formula is still written to `dist/` and nothing is pushed.
 
 ## License
 
