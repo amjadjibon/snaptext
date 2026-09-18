@@ -46,7 +46,17 @@ public struct OCRService: Sendable {
 
         let lines = (request.results ?? []).compactMap { observation -> OCRLine? in
             guard let candidate = observation.topCandidates(1).first else { return nil }
-            return OCRLine(text: candidate.string, confidence: Double(candidate.confidence))
+            let box = observation.boundingBox
+            return OCRLine(
+                text: candidate.string,
+                confidence: Double(candidate.confidence),
+                box: TextBox(
+                    x: box.origin.x,
+                    y: box.origin.y,
+                    width: box.width,
+                    height: box.height
+                )
+            )
         }
 
         return OCRResult(lines: lines)

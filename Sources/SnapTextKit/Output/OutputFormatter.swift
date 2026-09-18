@@ -1,9 +1,11 @@
 import Foundation
 
-/// Renders an OCR result for stdout, either as plain text or as JSON.
+/// Renders an OCR result for stdout: one line per block, the page layout
+/// rebuilt from the bounding boxes, or JSON.
 public struct OutputFormatter: Sendable {
     public enum Format: Equatable, Sendable {
         case plainText
+        case layout
         case json
     }
 
@@ -22,6 +24,8 @@ public struct OutputFormatter: Sendable {
         switch format {
         case .plainText:
             return result.text
+        case .layout:
+            return LayoutRenderer.render(result.lines)
         case .json:
             let encoder = JSONEncoder()
             encoder.outputFormatting = [.prettyPrinted, .sortedKeys, .withoutEscapingSlashes]

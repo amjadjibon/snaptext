@@ -33,7 +33,7 @@ final class OptionsTests: XCTestCase {
         XCTAssertEqual(options.recognitionLevel, .accurate)
         XCTAssertTrue(options.usesLanguageCorrection)
         XCTAssertFalse(options.copy)
-        XCTAssertFalse(options.json)
+        XCTAssertEqual(options.format, .plainText)
         XCTAssertFalse(options.verbose)
         XCTAssertTrue(options.languages.isEmpty)
     }
@@ -42,7 +42,7 @@ final class OptionsTests: XCTestCase {
         let options = try options("region", "--copy", "--json", "--fast", "--no-correction", "--verbose")
         XCTAssertEqual(options.source, .region)
         XCTAssertTrue(options.copy)
-        XCTAssertTrue(options.json)
+        XCTAssertEqual(options.format, .json)
         XCTAssertEqual(options.recognitionLevel, .fast)
         XCTAssertFalse(options.usesLanguageCorrection)
         XCTAssertTrue(options.verbose)

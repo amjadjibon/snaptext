@@ -40,8 +40,9 @@ Any format `NSImage` reads works: PNG, JPEG, TIFF, HEIC, and friends.
 
 | Option | Effect |
 |---|---|
-| `--copy`, `-c` | also copy the recognized text to the clipboard |
-| `--json` | print JSON with per-line confidence instead of plain text |
+| `--copy`, `-c` | also copy the printed text to the clipboard |
+| `--layout` | keep the printed layout: rows, columns, blank lines |
+| `--json` | print JSON with per-line confidence and bounding box |
 | `--language <code>`, `-l` | recognition language hint; repeat for several |
 | `--fast` | favour speed over accuracy |
 | `--accurate` | favour accuracy over speed (default) |
@@ -53,6 +54,7 @@ Any format `NSImage` reads works: PNG, JPEG, TIFF, HEIC, and friends.
 
 ```bash
 snaptext receipt.png --copy
+snaptext invoice.png --layout
 snaptext receipt.png --json
 snaptext receipt.png --language en-US --language bn-BD
 snaptext screenshot.png --fast
@@ -74,6 +76,38 @@ snaptext screenshot.png > text.txt
 snaptext receipt.png | grep Total | awk '{print $2}'
 ```
 
+### Layout
+
+By default each block Vision finds gets its own line, in Vision's reading order —
+which walks columns top to bottom, so a two-column invoice arrives as a pile of
+fragments. `--layout` puts every block back at the row and column it was printed
+at, using the bounding boxes:
+
+```bash
+snaptext invoice.png --layout
+```
+
+```text
+ACME Supply Co.                    Invoice #A-2291
+
+Bill to: Northwind Ltd             Date: 2026-03-04
+
+   Widget, 40mm x 120                     $340.00
+   Freight                                 $28.50
+
+   Subtotal                               $368.50
+   Sales tax (8.25%)                       $30.40
+   Amount due                             $398.90
+```
+
+Rows are grouped by vertical overlap, the character cell is estimated from how
+wide each block is per character, and a gap wider than the usual line spacing
+becomes a blank line. Monospaced pages come back almost exactly; proportional
+type lines up column by column but drifts within a line.
+
+Drawn rules — the `-----` separator above — are not text, so Vision returns no
+box for them and they cannot be restored. Their blank row survives.
+
 ### JSON
 
 ```bash
@@ -83,12 +117,18 @@ snaptext receipt.png --json
 ```json
 {
   "lines" : [
-    { "confidence" : 1, "text" : "Invoice #1024" },
-    { "confidence" : 1, "text" : "Total RM42.50" }
+    {
+      "box" : { "height" : 0.03, "width" : 0.28, "x" : 0.08, "y" : 0.78 },
+      "confidence" : 1,
+      "text" : "Invoice #1024"
+    }
   ],
   "text" : "Invoice #1024\nTotal RM42.50"
 }
 ```
+
+`box` is in Vision's normalized coordinates: 0…1, origin bottom-left. It is what
+`--layout` reads.
 
 ### Exit codes
 

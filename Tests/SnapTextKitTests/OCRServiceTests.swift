@@ -12,6 +12,10 @@ final class OCRServiceTests: XCTestCase {
             "expected 'Hello' in \(result.lines.map(\.text))"
         )
         XCTAssertTrue(result.lines.allSatisfy { $0.confidence > 0 })
+        XCTAssertTrue(
+            result.lines.allSatisfy { $0.box.width > 0 && $0.box.height > 0 },
+            "every line should carry the box Vision found it in"
+        )
     }
 
     func testFastLevelAlsoRecognizesText() throws {

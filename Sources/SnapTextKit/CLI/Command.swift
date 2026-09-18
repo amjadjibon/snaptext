@@ -50,11 +50,11 @@ public enum SnapTextCLI {
             throw SnapTextError.noTextDetected
         }
 
-        let formatter = OutputFormatter(format: options.json ? .json : .plainText)
-        print(try formatter.render(result))
+        let output = try OutputFormatter(format: options.format).render(result)
+        print(output)
 
         if options.copy {
-            Clipboard().writeText(result.text)
+            Clipboard().writeText(output)  // whatever was printed is what gets copied
         }
 
         if options.verbose {

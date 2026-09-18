@@ -12,7 +12,7 @@ public enum ImageSource: Equatable, Sendable {
 public struct Options: Equatable, Sendable {
     public var source: ImageSource
     public var copy = false
-    public var json = false
+    public var format: OutputFormatter.Format = .plainText
     public var languages: [String] = []
     public var recognitionLevel: RecognitionLevel = .accurate
     public var usesLanguageCorrection = true
@@ -42,8 +42,9 @@ public enum CommandLineParser {
           snaptext region             select a screen region, then OCR it
 
         OPTIONS:
-          --copy              copy the recognized text to the clipboard
-          --json              print JSON (text, lines, confidence) instead of plain text
+          --copy              copy the printed text to the clipboard
+          --layout            keep the printed layout: rows, columns, blank lines
+          --json              print JSON (text, lines, confidence, box) instead of plain text
           --language <code>   recognition language hint, repeatable (e.g. en-US)
           --fast              favour speed over accuracy
           --accurate          favour accuracy over speed (default)
@@ -54,6 +55,7 @@ public enum CommandLineParser {
 
         EXAMPLES:
           snaptext receipt.png --copy
+          snaptext invoice.png --layout
           snaptext receipt.png --json
           snaptext region --copy
           snaptext invoice.png | grep -i total
@@ -79,8 +81,10 @@ public enum CommandLineParser {
                 return .version
             case "--copy", "-c":
                 options.copy = true
+            case "--layout":
+                options.format = .layout
             case "--json":
-                options.json = true
+                options.format = .json
             case "--fast":
                 options.recognitionLevel = .fast
             case "--accurate":
