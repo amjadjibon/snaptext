@@ -1,4 +1,4 @@
 import Foundation
-import SnapTextKit
+import SnapTextCommandLine
 
 exit(SnapTextCLI.run(arguments: CommandLine.arguments))

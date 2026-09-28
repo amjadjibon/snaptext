@@ -16,11 +16,16 @@ let package = Package(
     targets: [
         .executableTarget(
             name: "SnapText",
-            dependencies: ["SnapTextKit"]
+            dependencies: ["SnapTextCommandLine"]
+        ),
+        // macOS only: argument parsing, screen capture, and the version stamp.
+        .target(
+            name: "SnapTextCommandLine",
+            dependencies: ["SnapTextKit"],
+            plugins: ["VersionStamp"]
         ),
         .target(
-            name: "SnapTextKit",
-            plugins: ["VersionStamp"]
+            name: "SnapTextKit"
         ),
         .plugin(
             name: "VersionStamp",
@@ -28,7 +33,7 @@ let package = Package(
         ),
         .testTarget(
             name: "SnapTextKitTests",
-            dependencies: ["SnapTextKit"]
+            dependencies: ["SnapTextKit", "SnapTextCommandLine"]
         )
     ]
 )

@@ -1,5 +1,6 @@
 import CoreGraphics
 import Foundation
+import SnapTextKit
 
 /// Captures the screen by driving macOS' built-in `screencapture` utility,
 /// which already provides the region-selection UI.

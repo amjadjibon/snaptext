@@ -1,6 +1,7 @@
 import XCTest
 
-@testable import SnapTextKit
+@testable import SnapTextCommandLine
+import SnapTextKit
 
 final class OptionsTests: XCTestCase {
     private func parse(_ arguments: String...) throws -> Invocation {

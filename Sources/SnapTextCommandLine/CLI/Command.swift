@@ -1,5 +1,6 @@
 import CoreGraphics
 import Foundation
+import SnapTextKit
 
 /// The command-line front end: parse, fetch an image, recognize, emit.
 public enum SnapTextCLI {

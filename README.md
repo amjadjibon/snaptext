@@ -151,10 +151,11 @@ swift run snaptext ~/Desktop/image.png
 Layout:
 
 ```text
-Sources/SnapText/        thin executable entry point
-Sources/SnapTextKit/     CLI, OCR, Image, Capture, Clipboard, Output
-Plugins/VersionStamp/    stamps the version from git at build time
-Tests/SnapTextKitTests/  parser, formatter, loader, and OCR tests
+Sources/SnapText/             thin executable entry point
+Sources/SnapTextCommandLine/  macOS only: argument parsing, screen capture
+Sources/SnapTextKit/          OCR, Image, Clipboard, Output
+Plugins/VersionStamp/         stamps the version from git at build time
+Tests/SnapTextKitTests/       parser, formatter, loader, and OCR tests
 ```
 
 The OCR tests render their own images, so there are no binary fixtures to maintain.

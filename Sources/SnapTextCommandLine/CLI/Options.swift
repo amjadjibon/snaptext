@@ -1,4 +1,5 @@
 import Foundation
+import SnapTextKit
 
 /// Where the image to recognize comes from.
 public enum ImageSource: Equatable, Sendable {
