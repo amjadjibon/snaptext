@@ -24,3 +24,7 @@ publish version *flags:
 ios:
     cd iOS && xcodegen generate && open SnapText.xcodeproj
 
+# Run the iOS app's tests on a simulator, e.g. `just ios-test "iPhone 17 Pro"`.
+ios-test device="iPhone 17 Pro":
+    cd iOS && xcodegen generate && xcodebuild test -project SnapText.xcodeproj -scheme SnapTextApp \
+        -destination "platform=iOS Simulator,name={{device}}" -skipPackagePluginValidation -quiet

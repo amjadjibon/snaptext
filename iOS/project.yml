@@ -37,3 +37,21 @@ targets:
         INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad: UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight
         ASSETCATALOG_COMPILER_APPICON_NAME: AppIcon
         ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME: AccentColor
+    scheme:
+      testTargets:
+        - SnapTextAppTests
+  SnapTextAppTests:
+    type: bundle.unit-test
+    platform: iOS
+    sources:
+      - SnapTextTests
+    dependencies:
+      - target: SnapTextApp
+    settings:
+      base:
+        GENERATE_INFOPLIST_FILE: YES
+        SWIFT_VERSION: "6.0"
+        PRODUCT_BUNDLE_IDENTIFIER: com.amjadjibon.snaptext.tests
+        # The app's product is "SnapText", not the target name xcodegen assumes.
+        TEST_HOST: $(BUILT_PRODUCTS_DIR)/SnapText.app/SnapText
+        BUNDLE_LOADER: $(TEST_HOST)

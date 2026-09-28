@@ -181,7 +181,11 @@ from `iOS/project.yml` and is not checked in:
 ```bash
 brew install xcodegen
 just ios             # generate and open in Xcode
+just ios-test        # run the app's tests on a simulator
 ```
+
+`just ios-test` passes `-skipPackagePluginValidation` so a command-line build does not stop
+to ask you to trust the package's VersionStamp plugin; the app itself does not use it.
 
 ### Versioning
 
