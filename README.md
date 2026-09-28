@@ -153,12 +153,35 @@ Layout:
 ```text
 Sources/SnapText/             thin executable entry point
 Sources/SnapTextCommandLine/  macOS only: argument parsing, screen capture
-Sources/SnapTextKit/          OCR, Image, Clipboard, Output
+Sources/SnapTextKit/          OCR, Image, Clipboard, Output — shared with the iOS app
 Plugins/VersionStamp/         stamps the version from git at build time
 Tests/SnapTextKitTests/       parser, formatter, loader, and OCR tests
+iOS/                          the iOS app (see below)
 ```
 
 The OCR tests render their own images, so there are no binary fixtures to maintain.
+
+### iOS app
+
+`iOS/` holds a SwiftUI app built on the same `SnapTextKit`. It needs iOS 18 and runs
+entirely on-device, like the CLI:
+
+- **Sources:** document camera (multi-page, perspective-corrected), Photos, Files,
+  paste, and drag and drop on iPad.
+- **Output:** plain text, layout, or JSON — the same renderers as `--layout` and `--json`.
+- **Recognized lines:** each line boxed on the image, coloured by confidence; tap a box
+  to copy that line.
+- **Settings:** fast/accurate, language correction, and language hints in priority order.
+- **Shortcuts:** an *Extract Text from Image* action that returns the text, so screenshots
+  and share-sheet images can be OCR'd in automations.
+
+The Xcode project is generated with [XcodeGen](https://github.com/yonaskolb/XcodeGen)
+from `iOS/project.yml` and is not checked in:
+
+```bash
+brew install xcodegen
+just ios             # generate and open in Xcode
+```
 
 ### Versioning
 

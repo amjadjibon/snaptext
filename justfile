@@ -19,3 +19,8 @@ install:
 
 publish version *flags:
     ./scripts/release.sh {{version}} {{flags}}
+
+# Generate the iOS app's Xcode project and open it.
+ios:
+    cd iOS && xcodegen generate && open SnapText.xcodeproj
+
