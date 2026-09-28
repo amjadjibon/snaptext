@@ -5,12 +5,18 @@ import PackageDescription
 let package = Package(
     name: "SnapText",
     platforms: [
-        .macOS(.v14)
+        .macOS(.v14),
+        .iOS(.v17)
     ],
     products: [
         .executable(
             name: "snaptext",
             targets: ["SnapText"]
+        ),
+        // The platform-neutral OCR core, shared by the CLI and the iOS app.
+        .library(
+            name: "SnapTextKit",
+            targets: ["SnapTextKit"]
         )
     ],
     targets: [

@@ -1,11 +1,18 @@
-import AppKit
 import CoreGraphics
 import Foundation
 
-/// Reads images from, and writes text to, the macOS pasteboard.
+#if canImport(AppKit)
+import AppKit
+#elseif canImport(UIKit)
+import UIKit
+import UniformTypeIdentifiers
+#endif
+
+/// Reads images from, and writes text to, the system pasteboard.
 public struct Clipboard: Sendable {
     public init() {}
 
+    #if canImport(AppKit)
     public func readImage() throws -> CGImage {
         guard
             let image = NSImage(pasteboard: .general),
@@ -21,4 +28,28 @@ public struct Clipboard: Sendable {
         pasteboard.clearContents()
         pasteboard.setString(text, forType: .string)
     }
+    #elseif canImport(UIKit)
+    /// Reading the pasteboard shows iOS's "Allow Paste" prompt unless the app
+    /// was granted access in Settings.
+    @MainActor
+    public func readImage() throws -> CGImage {
+        // `UIImage.cgImage` drops the orientation, so decode the raw bytes instead.
+        let pasteboard = UIPasteboard.general
+        let imageType = pasteboard.types.first { UTType($0)?.conforms(to: .image) == true }
+        if let data = imageType.flatMap(pasteboard.data(forPasteboardType:))
+            ?? pasteboard.image?.pngData() {
+            do {
+                return try ImageLoader().load(data: data, name: "clipboard image")
+            } catch {
+                throw SnapTextError.clipboardHasNoImage
+            }
+        }
+        throw SnapTextError.clipboardHasNoImage
+    }
+
+    @MainActor
+    public func writeText(_ text: String) {
+        UIPasteboard.general.string = text
+    }
+    #endif
 }

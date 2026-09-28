@@ -18,6 +18,13 @@ public enum RecognitionLevel: String, Equatable, Sendable {
 public struct OCRService: Sendable {
     public init() {}
 
+    /// Language codes Vision can recognize at `level`, e.g. `en-US`, `zh-Hans`.
+    public static func supportedLanguages(level: RecognitionLevel = .accurate) -> [String] {
+        let request = VNRecognizeTextRequest()
+        request.recognitionLevel = level.visionLevel
+        return (try? request.supportedRecognitionLanguages()) ?? []
+    }
+
     public func recognize(
         image: CGImage,
         level: RecognitionLevel = .accurate,
@@ -29,7 +36,7 @@ public struct OCRService: Sendable {
         request.usesLanguageCorrection = usesLanguageCorrection
 
         if !languages.isEmpty {
-            let supported = (try? request.supportedRecognitionLanguages()) ?? []
+            let supported = Self.supportedLanguages(level: level)
             if let unsupported = languages.first(where: { !supported.contains($0) }) {
                 throw SnapTextError.unsupportedLanguage(unsupported, supported: supported)
             }
